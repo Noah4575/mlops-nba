@@ -1,13 +1,13 @@
 dir=mlops_nba
 VENV=venv
-PYTHON_VERSION=3
-PRECOMMIT=$(VENV)/bin/pre-commit
-PYTHON=$(VENV)/bin/python$(PYTHON_VERSION)
-SAFETY=$(VENV)/bin/safety
+PYTHON_VERSION=
+PRECOMMIT=$(VENV)/Scripts/pre-commit
+PYTHON=$(VENV)/Scripts/python$(PYTHON_VERSION)
+SAFETY=$(VENV)/Scripts/safety
 
 ## environnement
 clean-venv:
-	rm -rf $(VENV)
+	if exist $(VENV) (rmdir /S /Q $(VENV))
 
 add-venv:
 	python$(PYTHON_VERSION) -m venv $(VENV)
