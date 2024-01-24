@@ -3,6 +3,7 @@ import numpy as np
 
 from pathlib import Path
 import os
+import datetime
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -17,15 +18,34 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-data_version = 1    
-LOG_DIR = Path('..') / "logs"
+data_version = 1
+DATA_DIR = Path('..') / "data" / f"version_{data_version}" 
 
-def collect_pipeline(LOG_DIR):
-    RAW_DATA_DIR = Path('..') / "data" / "raw"
-    filename = list(RAW_DATA_DIR.glob('*.csv'))[-1]
+def folder(DATA_DIR):
+    # Create data folder if it doesn't exist
+    if not DATA_DIR.exists():
+        os.makedirs(DATA_DIR)
+        os.makedirs(DATA_DIR / "raw")
+        os.makedirs(DATA_DIR / "curated")
+        #create a new log file in data_dir
+        log = os.path.join(DATA_DIR, "log.txt")
+
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(log, 'w') as f:
+            f.write("Log file created : {timestamp} \n")
+    else:
+        print(f"Folder {DATA_DIR} already exists, skipping...")
+    return
+
+folder(DATA_DIR)
+"""
+def collect_pipeline(DATA_DIR):
+
+    filename = list(DATA_DIR.glob('*.csv'))[-1]
+    log = 
 
     # Check if file has already been loaded
-    with open(Path('..') / "logs" 'log_raw_data.txt', 'a+') as f:
+    with open(f'{LOG_DIR}log_raw_data.txt', 'a+') as f:
         f.seek(0)
         if str(filename) in f.read():
             print(f"File {filename} has already been loaded, skipping...")
@@ -38,10 +58,10 @@ def collect_pipeline(LOG_DIR):
     
     players = pd.read_csv(filename, encoding='Windows-1252')
 
-    return players
+    return players,filename
 
     
-def preprocess_pipeling(players):    
+def preprocess_pipeling(players,filename,LOG_DIR):    
     if players.isnull().values.any():
         print("There are missing values in the dataset, let's drop them")
         players.dropna(inplace=True,axis=0)
@@ -65,7 +85,17 @@ def preprocess_pipeling(players):
     # Deal with the position outliers
     players["position"] = players['position'].apply(lambda x: x.replace('-')[0])
 
-    CURATED_DATA_DIR = Path('..') / "data" / "curated"
+    CUR_DATA_DIR = Path('..') / "data" / "curated"
+    filename = list(CUR_DATA_DIR.glob('*.csv'))[-1]
+
+    with open(f'{LOG_DIR}log_raw_data.txt', 'a+') as f:
+    f.seek(0)
+    if str(filename) in f.read():
+        print(f"File {filename} has already been loaded, skipping...")
+        return
+    else:
+        # Log filename
+        f.write(str(filename) + '\n')
 
     players.to_csv(CURATED_DATA_DIR / "2023-2024.csv", index=False)
 
@@ -75,3 +105,4 @@ def preprocess_pipeling(players):
 
 
 
+"""
